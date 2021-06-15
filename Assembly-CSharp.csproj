@@ -68,6 +68,9 @@
     <Compile Include="Assets\Scripts\Bike.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PowerupFuel.cs" />
+    <Compile Include="Assets\Scripts\RaceTrackCurved.cs" />
+    <Compile Include="Assets\Scripts\CurvedTrackPoint.cs" />
+    <Compile Include="Assets\Scripts\ObjectPlacer.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\NewSurfaceShader.shader" />

@@ -236,9 +236,14 @@ namespace Race
 
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
             Vector3 trackOffset = q * (Vector3.up * m_Track.Radius);
-            
-            transform.position = bikePos - trackOffset;
-            transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
+
+            //transform.position = bikePos - trackOffset;
+            //transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
+
+            transform.position = bikePos;
+            transform.rotation = m_Track.GetRotation(m_Distance);
+            transform.Rotate(Vector3.forward, m_RollAngle, Space.Self);
+            transform.Translate(-Vector3.up * m_Track.Radius, Space.Self);
         }
         
         
