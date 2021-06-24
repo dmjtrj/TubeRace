@@ -54,6 +54,9 @@ namespace Race
     /// </summary>
     public class Bike : MonoBehaviour
     {
+        [SerializeField] private bool m_IsPlayerBike;
+        public bool IsPlayerBike => m_IsPlayerBike;
+
         [SerializeField] private BikeParameters m_BikeParametersInitial;
 
         /// <summary>
@@ -96,6 +99,8 @@ namespace Race
         
         public RaceTrack GetTrack => m_Track;
 
+        public bool IsMovementControlsActive { get; set; }
+
         private float m_Distance;
         private float m_Velocity;
         [Range(0.0f, 360f)]
@@ -116,6 +121,7 @@ namespace Race
         {
             UpdateAfterburnerHeat();
             BikePhysics();
+            BestLapTime();
         }
 
         private float m_AfterburnerHeat;
@@ -143,6 +149,11 @@ namespace Race
 
             // Chech max heat
             // ***
+        }
+
+        public float GetNormalizedSpeed()
+        {
+            return Mathf.Clamp01(m_Velocity / m_BikeParametersInitial.maxSpeed);
         }
 
         private void BikePhysics()
@@ -186,6 +197,9 @@ namespace Race
 
             m_Velocity += dv;
 
+            if (m_BikeStatistics.TopSpeed < Mathf.Abs(m_Velocity))
+                m_BikeStatistics.TopSpeed = Mathf.Abs(m_Velocity);
+
             //m_Velocity = Mathf.Clamp(m_Velocity, -m_BikeParametersInitial.maxSpeed, m_BikeParametersInitial.maxSpeed);
 
             float dS = m_Velocity * dt;
@@ -204,13 +218,14 @@ namespace Race
 
             //m_Velocity += -m_Velocity * m_BikeParametersInitial.linearDrag * dt;
 
-            m_Distance = Mathf.Clamp(m_Distance, 0, m_Track.GetTrackLength());
+            // ограничение дистанции длиной в один круг 
+            //m_Distance = Mathf.Clamp(m_Distance, 0, m_Track.GetTrackLength());
 
             // если байк достигнет конечной точки трассы, то скорость приравнивается к 0
-            if (m_Distance == m_Track.GetTrackLength() || m_Distance == 0)
-            {
-                m_Velocity = 0;
-            }
+            //if (m_Distance == m_Track.GetTrackLength() || m_Distance == 0)
+            //{
+            //    m_Velocity = 0;
+            //}
 
             // изминение скорости вращения с учетом поворачиваемости байка
             float dv_roll = dt * m_HorizontalThrustAxis * m_BikeParametersInitial.agility;
@@ -236,9 +251,14 @@ namespace Race
 
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
             Vector3 trackOffset = q * (Vector3.up * m_Track.Radius);
-            
-            transform.position = bikePos - trackOffset;
-            transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
+
+            //transform.position = bikePos - trackOffset;
+            //transform.rotation = Quaternion.LookRotation(bikeDir, trackOffset);
+
+            transform.position = bikePos;
+            transform.rotation = m_Track.GetRotation(m_Distance);
+            transform.Rotate(Vector3.forward, m_RollAngle, Space.Self);
+            transform.Translate(-Vector3.up * m_Track.Radius, Space.Self);
         }
         
         
@@ -279,6 +299,89 @@ namespace Race
         }
 
         public static readonly string Tag = "Bike";
+
+
+        public class BikeStatistics
+        {
+            public float TopSpeed;
+            public float TotalTime;
+            public int RacePlace;
+            public float m_BestLapTime;
+        }
+
+        private BikeStatistics m_BikeStatistics;
+        public BikeStatistics Statistics => m_BikeStatistics;
+
+        private void Awake()
+        {
+            m_BikeStatistics = new BikeStatistics();
+            m_Times = new List<float>();
+            m_LapsTimes = new List<float>();
+        }
+
+        private float m_RaceStartTime;
+        public void OnRaceStart()
+        {
+            m_RaceStartTime = Time.time;
+        }
+
+        public void OnRaceEnd()
+        {
+            m_BikeStatistics.TotalTime = Time.time - m_RaceStartTime;
+        }
+
+
+        int i = 1;
+        // l - текущий круг 
+        public int l;
+        // lt -  время круга
+        float lt = 0;
+        public List<float> m_Times;
+        public List<float> m_LapsTimes;
+
+        // метод рассчитывающий лучшее время круга
+        public void BestLapTime()
+        // расчет времени от старта до завершения каждого круга и занесение значений в соответствующий список
+        {
+            int l = (int)(Distance / m_Track.GetTrackLength());
+            if (l == i)
+            {
+                float t = Time.time;
+                m_Times.Add(t);
+                i++;
+            }
+
+            // расчет времени каждого отдельного круга и занесение значений в соответствующий список
+            if (m_Times.Count == l)
+            {
+                for (int j = 0; j < l; j++)
+                {
+                    if (j == 0)
+                    {
+                        m_LapsTimes.Add(m_Times[0]);
+                    }
+                    else
+                    {
+                        lt = m_Times[j] - m_Times[j - 1];
+                        m_LapsTimes.Add(lt);
+                    }
+                }
+            }
+
+            // расчет лучшего времени круга
+            for (int j = 0; j <= l; j++)
+            {
+                if (j == 0)
+                    Statistics.m_BestLapTime = m_LapsTimes[j];
+                else
+                {
+                    if (Statistics.m_BestLapTime < m_LapsTimes[j])
+                        continue;
+                    else
+                        Statistics.m_BestLapTime = m_LapsTimes[j];
+                }
+            }
+        }
     }
 }
 

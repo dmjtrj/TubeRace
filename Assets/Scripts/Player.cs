@@ -25,6 +25,10 @@ namespace Race
         {
             m_ActiveBike.SetForwardThrustAxis(0);
             m_ActiveBike.SetHorizontalThrustAxis(0);
+
+            if (!m_ActiveBike.IsMovementControlsActive)
+                return;
+
             // управление вперед-назад
             // WASD управление
             if (Input.GetKey(KeyCode.W))

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,11 +11,20 @@ namespace Race
         [SerializeField] private float m_Distance;
         [Range(0.0f, 360f)]
         [SerializeField] private float m_RollAngle;
+        // угол в диапазоне которого будут активироваться паверапы
+        [Range(20.0f, 100f)]
+        [SerializeField] private float offsetAngle;
         
 
         private void OnValidate()
         {
             SetPowerPosition();
+        }
+
+        private void OnDrawGizmos()
+        {
+            Vector3 a1 = new Vector3(0, 0, transform.position.z);
+            Gizmos.DrawLine(a1, transform.position);
         }
 
         private void SetPowerPosition()
@@ -33,6 +43,7 @@ namespace Race
         private void Update()
         {
             UpdateBikes();
+            DrawOffsetAngle();
         }
 
         private void UpdateBikes()
@@ -43,20 +54,20 @@ namespace Race
 
                 float prev = bike.GetPrevDistance();
                 float curr = bike.GetDistance();
+
                 
                 if (prev < m_Distance && curr > m_Distance)
                 {
-                    // Здесь я указал диапазон захвата паверапа в 40 градусов, но как мне кажется правильнее бы было построить
-                    // 2 вектора идущих из центра трека которые будут касаться обеих сторон паверапа по локальной оси X,
-                    // найти угол между этими векторами и значение от Roll_Angle - данный угол/2 до Roll_Angle + - данный угол/2 будет нужным.
-                    // но пока что я не додумался как это сделать :(
-                    if (m_RollAngle <= (bike.RollAngle + 20) && m_RollAngle >= (bike.RollAngle - 20))
+                    if (m_RollAngle <= (bike.RollAngle + offsetAngle/2) && m_RollAngle >= (bike.RollAngle - offsetAngle/2))
                         // bike picks powerup
                         OnPickedByBike(bike);
                 }
             }
         }
-
+        private void DrawOffsetAngle()
+        {
+            
+        }
         public abstract void OnPickedByBike(Bike bike);
 
     }
