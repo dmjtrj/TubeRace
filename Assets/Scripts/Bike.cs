@@ -312,11 +312,12 @@ namespace Race
         private BikeStatistics m_BikeStatistics;
         public BikeStatistics Statistics => m_BikeStatistics;
 
+        [SerializeField] private RaceController m_RaceController;
+
         private void Awake()
         {
             m_BikeStatistics = new BikeStatistics();
             m_Times = new List<float>();
-            m_LapsTimes = new List<float>();
         }
 
         private float m_RaceStartTime;
@@ -331,55 +332,36 @@ namespace Race
         }
 
 
-        int i = 1;
-        // l - текущий круг 
-        public int l;
-        // lt -  время круга
-        float lt = 0;
+        private int i = 1;
+        // CompletedLaps - номер текущего круга 
+        private int CompletedLaps ;
+        // TimeLastLap -  время предыдущего круга
+        float TimeLastLap = 0;
         public List<float> m_Times;
-        public List<float> m_LapsTimes;
-
         // метод рассчитывающий лучшее время круга
         public void BestLapTime()
-        // расчет времени от старта до завершения каждого круга и занесение значений в соответствующий список
         {
-            int l = (int)(Distance / m_Track.GetTrackLength());
-            if (l == i)
+            CompletedLaps = (int)(Distance / m_Track.GetTrackLength());
+            if (CompletedLaps == i)
             {
                 float t = Time.time;
                 m_Times.Add(t);
-                i++;
-            }
-
-            // расчет времени каждого отдельного круга и занесение значений в соответствующий список
-            if (m_Times.Count == l)
-            {
-                for (int j = 0; j < l; j++)
+                if (CompletedLaps == 1)
                 {
-                    if (j == 0)
-                    {
-                        m_LapsTimes.Add(m_Times[0]);
-                    }
-                    else
-                    {
-                        lt = m_Times[j] - m_Times[j - 1];
-                        m_LapsTimes.Add(lt);
-                    }
+                    Statistics.m_BestLapTime = m_Times[0];
                 }
-            }
-
-            // расчет лучшего времени круга
-            for (int j = 0; j <= l; j++)
-            {
-                if (j == 0)
-                    Statistics.m_BestLapTime = m_LapsTimes[j];
                 else
                 {
-                    if (Statistics.m_BestLapTime < m_LapsTimes[j])
-                        continue;
+                    TimeLastLap = m_Times[CompletedLaps - 1] - m_Times[CompletedLaps - 2];
+                    if (Statistics.m_BestLapTime <= TimeLastLap)
+                    {
+                        i++;
+                        return;
+                    }
                     else
-                        Statistics.m_BestLapTime = m_LapsTimes[j];
+                        Statistics.m_BestLapTime = TimeLastLap;
                 }
+                i++;
             }
         }
     }
