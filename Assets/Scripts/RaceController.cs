@@ -79,16 +79,18 @@ namespace Race
         
         private void UpdateRacePrestart()
         {
-            if (CountTimer > 0)
+            if (CountTimer > 1)
             {
                 m_CountTimer -= Time.deltaTime;
 
-                if (m_CountTimer < 0)
+                if (m_CountTimer < 1)
                 {
                     foreach (var e in m_Bikes)
                         e.IsMovementControlsActive = true;
                 }
             }
+            else
+                m_CountTimer -= Time.deltaTime;
         }
 
         private void UpdateConditions()

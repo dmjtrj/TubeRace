@@ -17,7 +17,7 @@ namespace Race
 
             if (t >= 1)
                 m_Label.text = ((int)t).ToString();
-            else if (t > 0 && t < 1)
+            else if (t > -1 && t < 1)
                 m_Label.text = "Go!";
             else
                 gameObject.SetActive(false);
