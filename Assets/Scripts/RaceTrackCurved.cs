@@ -41,9 +41,14 @@ namespace Race
         [SerializeField] private float[] m_TrackSampledSegmentLengths;
         // длина всего трека
         [SerializeField] private float m_TrackSampledLength;
-
         [SerializeField] private bool m_DebugDrawBezier;
         [SerializeField] private bool m_DebugDrawSampledPoints;
+        [SerializeField] private TrackDescription m_TrackDescription;
+
+        public void Awake()
+        {
+            m_TrackDescription.SetTrackLength(m_TrackSampledLength);
+        }
 
         private void OnDrawGizmos()
         {
