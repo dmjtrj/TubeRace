@@ -36,6 +36,8 @@ namespace Race
         private float m_CountTimer;
         public float CountTimer => m_CountTimer;
 
+        public float time1;
+
         public bool IsRaceActive { get; private set; }
 
         [SerializeField] private RaceCondition[] m_Conditions;
@@ -53,7 +55,9 @@ namespace Race
                 c.OnRaceStart();
 
             foreach (var b in m_Bikes)
+            {
                 b.OnRaceStart();
+            }
 
             m_EventRaceStart?.Invoke();
         }
@@ -86,7 +90,9 @@ namespace Race
                 if (m_CountTimer < 1)
                 {
                     foreach (var e in m_Bikes)
+                    {
                         e.IsMovementControlsActive = true;
+                    }
                 }
             }
             else

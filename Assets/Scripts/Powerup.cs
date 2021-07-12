@@ -10,7 +10,7 @@ namespace Race
         [SerializeField] private RaceTrack m_Track;
         [SerializeField] private float m_Distance;
         [Range(0.0f, 360f)]
-        [SerializeField] private float m_RollAngle;
+        [SerializeField] private float m_RollAngle; 
         // угол в диапазоне которого будут активироваться паверапы
         [Range(20.0f, 100f)]
         [SerializeField] private float offsetAngle;
@@ -21,18 +21,11 @@ namespace Race
             SetPowerPosition();
         }
 
-        private void OnDrawGizmos()
-        {
-            Vector3 a1 = new Vector3(0, 0, transform.position.z);
-            Gizmos.DrawLine(a1, transform.position);
-        }
-
         private void SetPowerPosition()
         {
             Vector3 PowerupPos = m_Track.GetPosition(m_Distance);
             Vector3 PowerupDir = m_Track.GetDirection(m_Distance);
 
-            
             Quaternion q = Quaternion.AngleAxis(m_RollAngle, Vector3.forward);
             Vector3 trackOffset = q * (Vector3.up * (m_Track.Radius));
 

@@ -12,6 +12,7 @@ namespace Race
         [SerializeField] private Text m_TotalTime;
         [SerializeField] private Text m_BestLapTime;
         [SerializeField] private RaceController m_RaceController;
+        [SerializeField] private Bike m_Bike;
 
         private void Awake()
         {

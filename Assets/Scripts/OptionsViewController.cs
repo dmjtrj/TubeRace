@@ -8,6 +8,7 @@ namespace Race
     {
         [SerializeField] private MainMenuViewController m_MainMenuViewController;
         [SerializeField] private ScreenResolutionViewController m_ScreenResolutionViewController;
+        [SerializeField] private MenuSFXController m_MenuSFXController;
         private void Awake()
         {
             gameObject.SetActive(false);
@@ -17,6 +18,8 @@ namespace Race
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                m_MenuSFXController.Click();
+
                 m_MainMenuViewController.gameObject.SetActive(true);
 
                 gameObject.SetActive(false);

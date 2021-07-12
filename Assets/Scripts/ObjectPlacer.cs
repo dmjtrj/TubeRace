@@ -16,7 +16,6 @@ namespace Race
         [Range(1, 5)]
         [SerializeField] int instChance;
 
-
         // метод, создающий префабы
         public void spawnObj()
         {
@@ -27,27 +26,38 @@ namespace Race
         {
             float distance = 0;
 
+            int rand = m_NumObjects;
+
             for (int i = 0; i < m_NumObjects; i++)
             {
-                if (m_SpawnByChance == true)
+                if (distance == 0)
                 {
-                    if (Random.Range(1, 100) % instChance == 0)
-                    {
-                        spawnObj();
-                    }
+                    distance += m_Track.GetTrackLength() / m_NumObjects;
+                    continue;
                 }
                 else
+                {
+                    if (m_SpawnByChance == true)
+                    {
+                        if (Random.Range(1, rand) % instChance == 0)
+                        {
+                            spawnObj();
+                            rand -= 1;
+                        }
+                    }
+                    else
                         spawnObj();
 
-                m_Prefab.transform.position = m_Track.GetPosition(distance);
-                m_Prefab.transform.rotation = m_Track.GetRotation(distance);
+                    m_Prefab.transform.position = m_Track.GetPosition(distance);
+                    m_Prefab.transform.rotation = m_Track.GetRotation(distance);
 
-                if(m_RandomizeRotation)
-                {
-                    m_Prefab.transform.Rotate(Vector3.forward, UnityEngine.Random.Range(0, 360), Space.Self);
+                    if (m_RandomizeRotation)
+                    {
+                        m_Prefab.transform.Rotate(Vector3.forward, UnityEngine.Random.Range(0, 360), Space.Self);
+                    }
+
+                    distance += m_Track.GetTrackLength() / m_NumObjects;
                 }
-
-                distance += m_Track.GetTrackLength() / m_NumObjects;
             }
         }
     }

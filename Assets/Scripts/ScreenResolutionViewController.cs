@@ -10,6 +10,7 @@ namespace Race
         [SerializeField] private OptionsViewController m_OptionsViewController;
         [SerializeField] private Dropdown m_Dropdown;
         [SerializeField] private Text m_TextDone;
+        [SerializeField] private MenuSFXController m_MenuSFXController;
         // текущее значение разрешения, необходимо для того чтобы при выходе из данного пункта настроек и при повторном заходе
         // в dropdown было выбранное значение, подтвержденное кнопкой apply changes
         private int currentValue;
@@ -26,6 +27,8 @@ namespace Race
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                m_MenuSFXController.Click();
+
                 OnButtonBackToOptions();
             }
         }

@@ -54,6 +54,9 @@ namespace Race
     /// </summary>
     public class Bike : MonoBehaviour
     {
+        [SerializeField] private AnimationCurve m_CollisionVolumeCurve;
+        [SerializeField] private AudioSource m_CollisionSFX;
+
         [SerializeField] private bool m_IsPlayerBike;
         public bool IsPlayerBike => m_IsPlayerBike;
 
@@ -207,6 +210,9 @@ namespace Race
             // collision 
             if (Physics.Raycast(transform.position, transform.forward, dS))
             {
+                m_CollisionSFX.volume = m_CollisionVolumeCurve.Evaluate(GetNormalizedSpeed());
+                m_CollisionSFX.Play();
+
                 m_Velocity = -m_Velocity * m_BikeParametersInitial.collisionBounceFactor;
                 dS = m_Velocity * dt;
                 // при столкновении с препятствием у байка будет перегрев
@@ -260,8 +266,6 @@ namespace Race
             transform.Rotate(Vector3.forward, m_RollAngle, Space.Self);
             transform.Translate(-Vector3.up * m_Track.Radius, Space.Self);
         }
-        
-        
 
         private float m_PrevDistance;
         public float GetPrevDistance()
@@ -344,7 +348,8 @@ namespace Race
             CompletedLaps = (int)(Distance / m_Track.GetTrackLength());
             if (CompletedLaps == i)
             {
-                float t = Time.time;
+                float time2 = Time.time;
+                float t = time2 - m_RaceStartTime;
                 m_Times.Add(t);
                 if (CompletedLaps == 1)
                 {
